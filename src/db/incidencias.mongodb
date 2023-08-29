@@ -1,0 +1,206 @@
+use("db_campus_incidencias");
+db.createCollection("trainers", {
+    capped: true,
+    size: 1250,
+    max: 15,
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            additionalProperties: false,
+            required: ["id_trainer", "nombre", "email", "telefono", "rol"],
+            properties: {
+                _id: {
+                    bsonType: "objectId"
+                },
+                id_trainer: {
+                    bsonType: "int",
+                    minimum: 1,
+                    maximum: 15,
+                    description: "id_trainer is required. Must be an interger"
+                },
+                nombre: {
+                    bsonType: "string",
+                    pattern: "^[a-zA-Z0-9\\s]+$",
+                    minLength: 2,
+                    maxLength: 50,
+                    description: "nombre is required. Must be a string without special characters"
+                },
+                email: {
+                    bsonType: "string",
+                    pattern: "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+                    description: "email is required. Must be a string with a valid email"
+                },
+                telefono: {
+                    bsonType: "string",
+                    pattern: "^[0-9]+$",
+                    description: "telefono is required. Must be a string with only numbers"
+                },
+                rol: { 
+                    bsonType: "string",
+                    pattern: "^[a-zA-Z0-9\\s]+$",
+                    enum: ["admin", "trainer"],
+                    description: "rol is required. Must be a string without special characters, only 'admin' or 'trainer'"
+                },
+                permisos: { 
+                    bsonType: "object",
+                    description: "Authorizations for the trainer",
+                    properties: {
+                        "/app": {
+                            bsonType: "array",
+                            items: {
+                                bsonType: "string",
+                                description: "Indicate the allowed paths for the trainer",
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+});
+db.createCollection("incidencias", {
+    capped: true,
+    size: 2400,
+    max: 100,
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            additionalProperties: false,
+            required: ["id_incidencia", "categoria_incidencia", "tipo_incidencia", "descripcion", "fecha_incidencia", "equipo_afectado", "lugar_incidencia" , "trainer_id"],
+            properties: {
+                _id: {
+                    bsonType: "objectId"
+                },
+                id_incidencia: {
+                    bsonType: "int",
+                    description: "id_incidencia is required. Must be an interger"
+                },
+                categoria_incidencia: {
+                    bsonType: "string",
+                    pattern: "^[a-zA-Z0-9-_.]+$",
+                    enum: ["hardware", "software", "otro"],
+                    description: "categoria_incidencia is required. Must be a string without special characters, only 'hardware', 'software' or 'otro'"
+                },
+                tipo_incidencia: {
+                    bsonType: "string",
+                    enum: ["leve", "moderada", "grave"],
+                    description: "tipo_incidencia is required. Must be a string without special characters, only 'leve', 'moderada' or 'grave'",
+                },
+                descripcion: {
+                    bsonType: "string",
+                    pattern: "^[a-zA-Z0-9-_.]+$",
+                    description: "descripcion is required. Must be a string"
+                },
+                fecha_incidencia: {
+                    bsonType: "date",
+                    description: "fecha_incidencia is required. Must be a date format new Date(YYYY-MM-DD)"
+                },
+                equipo_afectado: {
+                    bsonType: "string",
+                    enum: ["pc", "mouse", "silla", "teclado", "conectores", "audifonos", "monitor", "otro"],
+                    description: "equipo_afectado is required. Must be a string without special characters, only 'pc', 'mouse', 'silla', 'teclado', 'conectores', 'audifonos', 'monitor' or 'otro'",
+                },
+                lugar_incidencia: {
+                    bsonType: "string",
+                    enum: ["Apolo", "Artemis", "Sputnik", "ZigZag"],
+                    description: "lugar_incidencia is required. Must be a string without special characters, only 'Apolo', 'Artemis', 'Sputnik', 'ZigZag'",
+                },
+                trainer_id: {
+                    bsonType: "int",
+                    enum: [1, 2, 3],
+                    description: "trainer_id is required. Must be an interger"
+                }
+            }
+        }
+    }
+});
+
+db.trainers.insertMany([
+    {
+        id_trainer: 1,
+        nombre: "Miguel Castro",
+        email: "mcastro@up.edu.co",
+        telefono: "1234567890",
+        rol: "trainer",
+        permisos: {
+            "/app/trainers": ["1.0.0", "GET"],
+            "/app/incidencias": ["1.0.0", "GET", "POST"]
+        }
+    },
+    {
+        id_trainer: 2,
+        nombre: "Vermen Ayala",
+        email: "vermen@up.edu.co",
+        telefono: "1234567891",
+        rol: "trainer",
+        permisos: {
+            "/app/trainers": ["1.0.0", "GET"],
+            "/app/incidencias": ["1.0.0", "GET", "POST"]
+        }
+    },
+    {
+        id_trainer: 3,
+        nombre: "Jholver",
+        email: "jholver@up.edu.co",
+        telefono: "1234567892",
+        rol: "admin",
+        permisos: {
+            "/app/trainers": ["1.0.0", "GET", "POST", "PATCH", "DELETE"],
+            "/app/incidencias": ["1.0.0", "GET", "POST", "PATCH", "DELETE"]
+        }
+    },
+
+]);
+db.incidencias.insertMany([
+    {
+        id_incidencia: 1,
+        categoria_incidencia: "hardware",
+        tipo_incidencia: "leve",
+        descripcion: "Problema con el pc",
+        fecha_incidencia: new Date("2022-01-01"),
+        equipo_afectado: "pc",
+        lugar_incidencia: "Apolo",
+        trainer_id: 3
+    
+    },
+    {
+        id_incidencia: 2,
+        categoria_incidencia: "software",
+        tipo_incidencia: "grave",
+        descripcion: "Problema con vscode",
+        fecha_incidencia: new Date("2022-01-02"),
+        equipo_afectado: "otro",
+        lugar_incidencia: "Artemis",
+        trainer_id: 2
+    },
+    {
+        id_incidencia: 3,
+        categoria_incidencia: "hardware",
+        tipo_incidencia: "leve",
+        descripcion: "Problema con el monitor",
+        fecha_incidencia: new Date("2022-01-03"),
+        equipo_afectado: "monitor",
+        lugar_incidencia: "Sputnik",
+        trainer_id: 1
+    },
+    {
+        id_incidencia: 4,
+        categoria_incidencia: "hardware",
+        tipo_incidencia: "moderada",
+        descripcion: "Problema con el mouse",
+        fecha_incidencia: new Date("2022-01-04"),
+        equipo_afectado: "mouse",
+        lugar_incidencia: "ZigZag",
+        trainer_id: 1
+    },
+    {
+        id_incidencia: 5,
+        categoria_incidencia: "hardware",
+        tipo_incidencia: "grave",
+        descripcion: "Problema con el teclado",
+        fecha_incidencia: new Date("2022-01-05"),
+        equipo_afectado: "teclado",
+        lugar_incidencia: "Apolo",
+        trainer_id: 3
+    }
+])
