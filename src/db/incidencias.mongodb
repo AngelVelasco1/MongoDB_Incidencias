@@ -58,62 +58,6 @@ db.createCollection("trainers", {
         }
     }
 });
-db.createCollection("incidencias", {
-    capped: true,
-    size: 2400,
-    max: 100,
-    validator: {
-        $jsonSchema: {
-            bsonType: "object",
-            additionalProperties: false,
-            required: ["id_incidencia", "categoria_incidencia", "tipo_incidencia", "descripcion", "fecha_incidencia", "equipo_afectado", "lugar_incidencia" , "trainer_id"],
-            properties: {
-                _id: {
-                    bsonType: "objectId"
-                },
-                id_incidencia: {
-                    bsonType: "int",
-                    description: "id_incidencia is required. Must be an interger"
-                },
-                categoria_incidencia: {
-                    bsonType: "string",
-                    pattern: "^[a-zA-Z0-9-_.]+$",
-                    enum: ["hardware", "software", "otro"],
-                    description: "categoria_incidencia is required. Must be a string without special characters, only 'hardware', 'software' or 'otro'"
-                },
-                tipo_incidencia: {
-                    bsonType: "string",
-                    enum: ["leve", "moderada", "grave"],
-                    description: "tipo_incidencia is required. Must be a string without special characters, only 'leve', 'moderada' or 'grave'",
-                },
-                descripcion: {
-                    bsonType: "string",
-                    pattern: "^[a-zA-Z0-9-_.]+$",
-                    description: "descripcion is required. Must be a string"
-                },
-                fecha_incidencia: {
-                    bsonType: "date",
-                    description: "fecha_incidencia is required. Must be a date format new Date(YYYY-MM-DD)"
-                },
-                equipo_afectado: {
-                    bsonType: "string",
-                    enum: ["pc", "mouse", "silla", "teclado", "conectores", "audifonos", "monitor", "otro"],
-                    description: "equipo_afectado is required. Must be a string without special characters, only 'pc', 'mouse', 'silla', 'teclado', 'conectores', 'audifonos', 'monitor' or 'otro'",
-                },
-                lugar_incidencia: {
-                    bsonType: "string",
-                    enum: ["Apolo", "Artemis", "Sputnik", "ZigZag"],
-                    description: "lugar_incidencia is required. Must be a string without special characters, only 'Apolo', 'Artemis', 'Sputnik', 'ZigZag'",
-                },
-                trainer_id: {
-                    bsonType: "int",
-                    enum: [1, 2, 3],
-                    description: "trainer_id is required. Must be an interger"
-                }
-            }
-        }
-    }
-});
 
 db.trainers.insertMany([
     {
@@ -151,6 +95,61 @@ db.trainers.insertMany([
     },
 
 ]);
+db.createCollection("incidencias", {
+    capped: true,
+    size: 2400,
+    max: 100,
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            additionalProperties: false,
+            required: ["id_incidencia", "categoria_incidencia", "tipo_incidencia", "descripcion", "fecha_incidencia", "equipo_afectado", "lugar_incidencia" , "trainer_id"],
+            properties: {
+                _id: {
+                    bsonType: "objectId"
+                },
+                id_incidencia: {
+                    bsonType: "int",
+                    description: "id_incidencia is required. Must be an interger"
+                },
+                categoria_incidencia: {
+                    bsonType: "string",
+                    enum: ["hardware", "software", "otro"],
+                    description: "categoria_incidencia is required. Must be a string without special characters, only 'hardware', 'software' or 'otro'"
+                },
+                tipo_incidencia: {
+                    bsonType: "string",
+                    enum: ["leve", "moderada", "grave"],
+                    description: "tipo_incidencia is required. Must be a string without special characters, only 'leve', 'moderada' or 'grave'",
+                },
+                descripcion: {
+                    bsonType: "string",
+                    description: "descripcion is required. Must be a string"
+                },
+                fecha_incidencia: {
+                    bsonType: "date",
+                    description: "fecha_incidencia is required. Must be a date format new Date(YYYY-MM-DD)"
+                },
+                equipo_afectado: {
+                    bsonType: "string",
+                    enum: ["pc", "mouse", "silla", "teclado", "conectores", "audifonos", "monitor", "otro"],
+                    description: "equipo_afectado is required. Must be a string without special characters, only 'pc', 'mouse', 'silla', 'teclado', 'conectores', 'audifonos', 'monitor' or 'otro'",
+                },
+                lugar_incidencia: {
+                    bsonType: "string",
+                    enum: ["Apolo", "Artemis", "Sputnik", "ZigZag"],
+                    description: "lugar_incidencia is required. Must be a string without special characters, only 'Apolo', 'Artemis', 'Sputnik', 'ZigZag'",
+                },
+                trainer_id: {
+                    bsonType: "int",
+                    enum: [1, 2, 3],
+                    description: "trainer_id is required. Must be an interger"
+                }
+            }
+        }
+    }
+});
+
 db.incidencias.insertMany([
     {
         id_incidencia: 1,
